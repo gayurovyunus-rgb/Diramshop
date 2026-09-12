@@ -1,54 +1,259 @@
-<!doctype html><html lang="tg"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<!DOCTYPE html>
+<html lang="tg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Diramshop</title>
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#151515">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Diramshop">
-<link rel="icon" href="icon.svg"><style>
-*{box-sizing:border-box}body{margin:0;font-family:Arial;background:#f4f4f4;color:#171717}header{background:#151515;color:#fff;padding:16px;position:sticky;top:0;z-index:3}.brand{font-size:27px;font-weight:800}.brand b{color:#ffc400}main{padding:16px 16px 90px}.hero{background:#ffc400;border-radius:20px;padding:20px;margin-bottom:16px}.hero h2{margin:0 0 7px}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.card{background:#fff;border-radius:17px;padding:10px;box-shadow:0 2px 8px #0001}.pic{height:125px;background:#eee;border-radius:13px;display:flex;align-items:center;justify-content:center;overflow:hidden;font-size:52px}.pic img{width:100%;height:100%;object-fit:cover}.name{font-weight:bold;margin:9px 0 5px}.price{font-size:18px;font-weight:bold}button{border:0;border-radius:11px;padding:11px;width:100%;margin-top:9px;background:#ffc400;font-weight:bold;font-size:15px}.bottom{position:fixed;bottom:0;left:0;right:0;background:#151515;padding:12px 16px;display:flex;gap:10px;z-index:5}.bottom button{margin:0}.bottom .dark{background:#fff}.modal{display:none;position:fixed;inset:0;background:#f7f7f7;z-index:10;overflow:auto;padding:18px}.topbtn{background:#ddd;width:auto;padding:9px 14px;margin:0 0 12px}.panel{background:#fff;border-radius:18px;padding:16px;margin-bottom:14px}.panel input{width:100%;padding:13px;border:1px solid #ddd;border-radius:10px;margin:7px 0;font-size:16px}.list{margin-top:12px}.item{background:#fff;border-radius:13px;padding:12px;margin:8px 0;display:flex;align-items:center;gap:10px}.thumb{width:50px;height:50px;border-radius:9px;background:#eee;object-fit:cover}.actions{margin-left:auto;display:flex;gap:5px}.small{width:auto;padding:8px 10px;margin:0}.red{background:#ffdddd}.cartitem{background:#fff;padding:14px;border-radius:14px;margin:8px 0}.total{font-size:21px;font-weight:bold;margin:18px 0}.empty{text-align:center;color:#777;margin:40px 0}
-</style></head><body>
-<header><div class="brand">🛒 Diram<b>shop</b></div><div style="margin-top:6px">Маҳсулоти беҳтарин барои шумо</div></header>
-<main><div class="hero"><h2>Хуш омадед! 👋</h2><div>Заказро осон диҳед 🛍️</div></div><div id="products" class="grid"></div><div id="empty" class="empty">Ҳоло маҳсулот нест. Аз панели Админ илова кунед.</div></main>
-<div class="bottom"><button onclick="openCart()">🛒 Сабад (<span id="count">0</span>)</button><button class="dark" onclick="openAdmin()">⚙️ Админ</button></div>
 
-<div id="admin" class="modal"><button class="topbtn" onclick="closeAdmin()">← Бозгашт</button><h2>⚙️ Панели Админ</h2><div class="panel"><h3>➕ Маҳсулоти нав</h3>
-<input id="pname" placeholder="Номи маҳсулот">
-<input id="pprice" type="number" step="0.01" placeholder="Нарх (сомонӣ)">
-<input id="pemoji" placeholder="Emoji (масалан 🥤)" value="📦">
-<input id="pimage" type="file" accept="image/*">
-<button onclick="addProduct()">➕ Маҳсулотро илова кун</button></div>
-<div class="panel"><h3>📦 Маҳсулотҳои ман</h3><div id="adminList"></div></div></div>
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#f2f2f7;
+  color:#111;
+}
+.app{
+  max-width:600px;
+  margin:auto;
+  min-height:100vh;
+  padding:20px;
+}
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.logo{
+  font-size:28px;
+  font-weight:bold;
+}
+.card{
+  background:white;
+  border-radius:22px;
+  padding:18px;
+  margin:15px 0;
+  box-shadow:0 5px 20px #00000012;
+}
+input,button{
+  width:100%;
+  padding:15px;
+  margin-top:10px;
+  border-radius:14px;
+  border:none;
+  font-size:16px;
+}
+input{background:#f2f2f7}
+button{
+  background:#111;
+  color:white;
+  font-weight:bold;
+}
+.product{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.price{
+  color:#16a34a;
+  font-weight:bold;
+}
+.bottom{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  background:white;
+  display:flex;
+  justify-content:space-around;
+  padding:15px;
+  box-shadow:0 -2px 15px #00000015;
+}
+.bottom button{
+  width:auto;
+  margin:0;
+  background:none;
+  color:#111;
+  padding:5px;
+}
+.hidden{display:none}
+.message{
+  padding:12px;
+  background:#e5e5ea;
+  border-radius:15px;
+  margin:8px 0;
+}
+.adminmsg{
+  background:#007aff;
+  color:white;
+}
+</style>
+</head>
 
-<div id="cart" class="modal"><button class="topbtn" onclick="closeCart()">← Бозгашт</button><h2>🛒 Сабади ман</h2><div id="cartList"></div><div id="cartEmpty" class="empty">Сабад холӣ аст</div><div id="total" class="total"></div><button onclick="checkout()">📱 Заказро тайёр кун</button></div>
+<body>
+
+<div class="app">
+
+<div id="register">
+  <div class="card">
+    <h1>🛍️ Diramshop</h1>
+    <p>Хуш омадед! Барои оғоз аккаунт кушоед.</p>
+
+    <input id="firstname" placeholder="Ном">
+    <input id="lastname" placeholder="Фамилия">
+    <input id="phone" placeholder="Рақами телефон">
+
+    <button onclick="registerUser()">Кушодани аккаунт</button>
+  </div>
+</div>
+
+<div id="shop" class="hidden">
+
+<div class="header">
+  <div class="logo">🛍️ Diramshop</div>
+  <div>🛒 <span id="cartCount">0</span></div>
+</div>
+
+<div id="homePage">
+  <div class="card">
+    <h2>Салом, <span id="username"></span> 👋</h2>
+    <p>Маҳсулотҳои моро интихоб кунед</p>
+  </div>
+
+  <div class="card product">
+    <div>
+      <h3>🛒 Маҳсулот</h3>
+      <p>Маҳсулоти нав ба наздикӣ илова мешавад</p>
+    </div>
+    <button onclick="addProduct()" style="width:auto">+</button>
+  </div>
+</div>
+
+<div id="cartPage" class="hidden">
+  <div class="card">
+    <h2>🛒 Сабади ман</h2>
+    <div id="cartItems">Сабад холӣ аст</div>
+    <button onclick="order()">📦 Омода кардани фармоиш</button>
+  </div>
+</div>
+
+<div id="chatPage" class="hidden">
+  <div class="card">
+    <h2>💬 Чат бо Админ</h2>
+
+    <div id="messages">
+      <div class="message adminmsg">
+        Салом! 👋 Ман Админ ҳастам. Чӣ кӯмак кунам?
+      </div>
+    </div>
+
+    <input id="messageInput" placeholder="Паём нависед...">
+    <button onclick="sendMessage()">Фиристодан</button>
+  </div>
+</div>
+
+</div>
+</div>
+
+<div id="nav" class="bottom hidden">
+  <button onclick="showPage('home')">🏠<br>Асосӣ</button>
+  <button onclick="showPage('cart')">🛒<br>Сабад</button>
+  <button onclick="showPage('chat')">💬<br>Чат</button>
+</div>
 
 <script>
-let products=JSON.parse(localStorage.getItem('diram_products')||'[]');
-let cart=JSON.parse(localStorage.getItem('diram_cart')||'[]');
-function save(){localStorage.setItem('diram_products',JSON.stringify(products));localStorage.setItem('diram_cart',JSON.stringify(cart))}
-function render(){
-let box=document.getElementById('products');box.innerHTML='';
-products.forEach((p,i)=>box.innerHTML+=`<div class="card"><div class="pic">${p.image?'<img src="'+p.image+'">':p.emoji}</div><div class="name">${esc(p.name)}</div><div class="price">${Number(p.price).toFixed(2)} смн</div><button onclick="addCart(${i})">➕ Ба сабад</button></div>`);
-document.getElementById('empty').style.display=products.length?'none':'block';updateCount();renderAdmin();
+let cart=[];
+
+function registerUser(){
+  let name=document.getElementById("firstname").value;
+  let lastname=document.getElementById("lastname").value;
+  let phone=document.getElementById("phone").value;
+
+  if(!name || !lastname || !phone){
+    alert("Ҳамаи маълумотро пур кунед!");
+    return;
+  }
+
+  localStorage.setItem("userName",name);
+  localStorage.setItem("userLast",lastname);
+  localStorage.setItem("userPhone",phone);
+
+  startApp();
 }
-function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+
+function startApp(){
+  document.getElementById("register").classList.add("hidden");
+  document.getElementById("shop").classList.remove("hidden");
+  document.getElementById("nav").classList.remove("hidden");
+
+  document.getElementById("username").innerText=
+    localStorage.getItem("userName") || "";
+}
+
 function addProduct(){
-let name=document.getElementById('pname').value.trim(),price=document.getElementById('pprice').value,emoji=document.getElementById('pemoji').value||'📦',file=document.getElementById('pimage').files[0];
-if(!name||!price){alert('Ном ва нархро навис!');return}
-let done=image=>{products.push({name,price:Number(price),emoji,image});save();document.getElementById('pname').value='';document.getElementById('pprice').value='';document.getElementById('pimage').value='';render();alert('Маҳсулот илова шуд ✅')};
-if(file){let r=new FileReader();r.onload=e=>done(e.target.result);r.readAsDataURL(file)}else done('');
+  cart.push({
+    name:"Маҳсулоти интихобшуда",
+    price:10
+  });
+
+  document.getElementById("cartCount").innerText=cart.length;
+  alert("Ба сабад илова шуд! 🛒");
 }
-function renderAdmin(){let x=document.getElementById('adminList');if(!x)return;x.innerHTML=products.map((p,i)=>`<div class="item">${p.image?'<img class="thumb" src="'+p.image+'">':'<div class="thumb" style="display:flex;align-items:center;justify-content:center;font-size:25px">'+p.emoji+'</div>'}<div><b>${esc(p.name)}</b><br>${p.price} смн</div><div class="actions"><button class="small red" onclick="delProduct(${i})">🗑️</button></div></div>`).join('')||'Ҳоло маҳсулот нест';}
-function delProduct(i){if(confirm('Нест мекунӣ?')){products.splice(i,1);cart=cart.filter(x=>x.i!==i).map(x=>x.i>i?{...x,i:x.i-1}:x);save();render()}}
-function addCart(i){let x=cart.find(x=>x.i===i);if(x)x.q++;else cart.push({i,q:1});save();updateCount();alert('Ба сабад илова шуд ✅')}
-function updateCount(){document.getElementById('count').textContent=cart.reduce((s,x)=>s+x.q,0)}
-function openAdmin(){document.getElementById('admin').style.display='block';renderAdmin()}function closeAdmin(){document.getElementById('admin').style.display='none'}
-function openCart(){document.getElementById('cart').style.display='block';let total=0;document.getElementById('cartList').innerHTML=cart.map((x,n)=>{let p=products[x.i];if(!p)return'';let s=p.price*x.q;total+=s;return `<div class="cartitem"><b>${esc(p.name)}</b><br>${p.price} смн × ${x.q}<div><button class="small" onclick="qty(${n},-1)">−</button> <button class="small" onclick="qty(${n},1)">+</button></div></div>`}).join('');document.getElementById('cartEmpty').style.display=cart.length?'none':'block';document.getElementById('total').textContent=cart.length?'Ҳамагӣ: '+total.toFixed(2)+' смн':''}
-function closeCart(){document.getElementById('cart').style.display='none'}function qty(n,d){cart[n].q+=d;if(cart[n].q<=0)cart.splice(n,1);save();openCart();updateCount()}
-function checkout(){if(!cart.length){alert('Сабад холӣ аст');return}let text='Салом! Заказ аз Diramshop:%0A';let total=0;cart.forEach(x=>{let p=products[x.i];if(p){text+=p.name+' — '+x.q+' дона%0A';total+=p.price*x.q}});text+='%0AҲамагӣ: '+total.toFixed(2)+' смн';alert('Матни заказ тайёр шуд. Баъд рақами WhatsApp-и мағозаро ҳам мегузорем.');navigator.clipboard?.writeText(decodeURIComponent(text.replace(/%0A/g,'\n')))}
-render();
-</script><script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
+
+function showPage(page){
+  document.getElementById("homePage").classList.add("hidden");
+  document.getElementById("cartPage").classList.add("hidden");
+  document.getElementById("chatPage").classList.add("hidden");
+
+  if(page==="home"){
+    document.getElementById("homePage").classList.remove("hidden");
+  }
+
+  if(page==="cart"){
+    document.getElementById("cartPage").classList.remove("hidden");
+
+    let html="";
+    cart.forEach((item)=>{
+      html+="<div class='card'>"+
+      item.name+" - "+item.price+" сомонӣ</div>";
+    });
+    
+
+    document.getElementById("cartItems").innerHTML=
+      html || "Сабад холӣ аст";
+  }
+
+  if(page==="chat"){
+    document.getElementById("chatPage").classList.remove("hidden");
+  }
 }
-</script></body></html>
+
+function sendMessage(){
+  let input=document.getElementById("messageInput");
+  let text=input.value;
+
+  if(!text)return;
+
+  document.getElementById("messages").innerHTML+=
+  "<div class='message'>"+text+"</div>";
+
+  input.value="";
+}
+
+function order(){
+  if(cart.length===0){
+    alert("Сабад холӣ аст!");
+    return;
+  }
+
+  alert("Фармоиши шумо қабул шуд! 📦 Админ бо шумо тамос мегирад.");
+  showPage("chat");
+}
+
+if(localStorage.getItem("userName")){
+  startApp();
+}
+</script>
+
+</body>
+</html>
