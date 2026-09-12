@@ -6,28 +6,36 @@
 <title>Diramshop</title>
 
 <style>
-*{box-sizing:border-box}
+*{
+  box-sizing:border-box;
+}
+
 body{
   margin:0;
   font-family:Arial,sans-serif;
   background:#f2f2f7;
   color:#111;
+  padding-bottom:90px;
 }
+
 .app{
   max-width:600px;
   margin:auto;
-  min-height:100vh;
   padding:20px;
 }
+
 .header{
   display:flex;
   justify-content:space-between;
   align-items:center;
+  margin-bottom:20px;
 }
+
 .logo{
   font-size:28px;
   font-weight:bold;
 }
+
 .card{
   background:white;
   border-radius:22px;
@@ -35,6 +43,29 @@ body{
   margin:15px 0;
   box-shadow:0 5px 20px #00000012;
 }
+
+.product{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+}
+
+.product-info{
+  flex:1;
+}
+
+.product-name{
+  font-size:19px;
+  font-weight:bold;
+}
+
+.price{
+  color:#16a34a;
+  font-weight:bold;
+  margin-top:7px;
+}
+
 input,button{
   width:100%;
   padding:15px;
@@ -43,21 +74,30 @@ input,button{
   border:none;
   font-size:16px;
 }
-input{background:#f2f2f7}
+
+input{
+  background:#f2f2f7;
+}
+
 button{
   background:#111;
   color:white;
   font-weight:bold;
+  cursor:pointer;
 }
-.product{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
+
+.green{
+  background:#16a34a;
 }
-.price{
-  color:#16a34a;
-  font-weight:bold;
+
+.red{
+  background:#dc2626;
 }
+
+.hidden{
+  display:none;
+}
+
 .bottom{
   position:fixed;
   bottom:0;
@@ -66,26 +106,44 @@ button{
   background:white;
   display:flex;
   justify-content:space-around;
-  padding:15px;
+  padding:12px;
   box-shadow:0 -2px 15px #00000015;
+  z-index:100;
 }
+
 .bottom button{
   width:auto;
   margin:0;
   background:none;
   color:#111;
-  padding:5px;
+  padding:8px 12px;
 }
-.hidden{display:none}
-.message{
-  padding:12px;
-  background:#e5e5ea;
-  border-radius:15px;
-  margin:8px 0;
+
+.admin-title{
+  font-size:25px;
+  font-weight:bold;
+  margin-bottom:15px;
 }
-.adminmsg{
-  background:#007aff;
-  color:white;
+
+.small{
+  color:#666;
+  font-size:14px;
+}
+
+.product-actions{
+  display:flex;
+  gap:8px;
+  margin-top:12px;
+}
+
+.product-actions button{
+  margin:0;
+}
+
+.empty{
+  text-align:center;
+  color:#777;
+  padding:30px 10px;
 }
 </style>
 </head>
@@ -94,166 +152,260 @@ button{
 
 <div class="app">
 
-<div id="register">
-  <div class="card">
-    <h1>🛍️ Diramshop</h1>
-    <p>Хуш омадед! Барои оғоз аккаунт кушоед.</p>
-
-    <input id="firstname" placeholder="Ном">
-    <input id="lastname" placeholder="Фамилия">
-    <input id="phone" placeholder="Рақами телефон">
-
-    <button onclick="registerUser()">Кушодани аккаунт</button>
-  </div>
-</div>
-
-<div id="shop" class="hidden">
-
-<div class="header">
-  <div class="logo">🛍️ Diramshop</div>
-  <div>🛒 <span id="cartCount">0</span></div>
-</div>
-
-<div id="homePage">
-  <div class="card">
-    <h2>Салом, <span id="username"></span> 👋</h2>
-    <p>Маҳсулотҳои моро интихоб кунед</p>
+  <!-- HEADER -->
+  <div class="header">
+    <div class="logo">Diramshop 🛒</div>
+    <div>🛍️ <span id="cartCount">0</span></div>
   </div>
 
-  <div class="card product">
-    <div>
-      <h3>🛒 Маҳсулот</h3>
-      <p>Маҳсулоти нав ба наздикӣ илова мешавад</p>
+
+  <!-- HOME -->
+  <div id="homePage">
+
+    <div class="card">
+      <h2>Хуш омадед! 👋</h2>
+      <p>Маҳсулоти лозимаатонро интихоб кунед.</p>
     </div>
-    <button onclick="addProduct()" style="width:auto">+</button>
+
+    <h2>Маҳсулот</h2>
+
+    <div id="products"></div>
+
   </div>
-</div>
 
-<div id="cartPage" class="hidden">
-  <div class="card">
-    <h2>🛒 Сабади ман</h2>
-    <div id="cartItems">Сабад холӣ аст</div>
-    <button onclick="order()">📦 Омода кардани фармоиш</button>
+
+  <!-- CART -->
+  <div id="cartPage" class="hidden">
+
+    <div class="card">
+      <h2>🛒 Сабади шумо</h2>
+
+      <div id="cartItems"></div>
+
+      <button class="green" onclick="order()">
+        Фармоиш додан 📦
+      </button>
+
+      <button onclick="showPage('home')">
+        ← Бозгашт
+      </button>
+    </div>
+
   </div>
-</div>
 
-<div id="chatPage" class="hidden">
-  <div class="card">
-    <h2>💬 Чат бо Админ</h2>
 
-    <div id="messages">
-      <div class="message adminmsg">
-        Салом! 👋 Ман Админ ҳастам. Чӣ кӯмак кунам?
+  <!-- ADMIN LOGIN -->
+  <div id="loginPage" class="hidden">
+
+    <div class="card">
+
+      <div class="admin-title">
+        👨‍💼 Admin
       </div>
+
+      <p class="small">
+        Барои ворид шудан паролро навис.
+      </p>
+
+      <input
+        type="password"
+        id="adminPassword"
+        placeholder="Парол"
+      >
+
+      <button onclick="loginAdmin()">
+        Даромадан
+      </button>
+
+      <button onclick="showPage('home')">
+        ← Бозгашт
+      </button>
+
     </div>
 
-    <input id="messageInput" placeholder="Паём нависед...">
-    <button onclick="sendMessage()">Фиристодан</button>
   </div>
-</div>
+
+
+  <!-- ADMIN PANEL -->
+  <div id="adminPage" class="hidden">
+
+    <div class="card">
+
+      <div class="admin-title">
+        👨‍💼 Панели Admin
+      </div>
+
+      <p class="small">
+        Дар ин ҷо маҳсулотро идора карда метавонӣ.
+      </p>
+
+      <input
+        id="productName"
+        placeholder="Номи маҳсулот"
+      >
+
+      <input
+        id="productPrice"
+        type="number"
+        placeholder="Нарх (сомонӣ)"
+      >
+
+      <button class="green" onclick="addProductAdmin()">
+        ➕ Илова кардани маҳсулот
+      </button>
+
+    </div>
+
+    <div id="adminProducts"></div>
+
+    <div class="card">
+      <button class="red" onclick="logoutAdmin()">
+        Баромадан аз Admin
+      </button>
+    </div>
+
+  </div>
 
 </div>
+
+
+<!-- BOTTOM MENU -->
+<div class="bottom">
+
+  <button onclick="showPage('home')">
+    🏠<br>Асосӣ
+  </button>
+
+  <button onclick="showPage('cart')">
+    🛒<br>Сабад
+  </button>
+
+  <button onclick="openAdmin()">
+    👨‍💼<br>Admin
+  </button>
+
 </div>
 
-<div id="nav" class="bottom hidden">
-  <button onclick="showPage('home')">🏠<br>Асосӣ</button>
-  <button onclick="showPage('cart')">🛒<br>Сабад</button>
-  <button onclick="showPage('chat')">💬<br>Чат</button>
-</div>
 
 <script>
-let cart=[];
 
-function registerUser(){
-  let name=document.getElementById("firstname").value;
-  let lastname=document.getElementById("lastname").value;
-  let phone=document.getElementById("phone").value;
+let cart = JSON.parse(
+  localStorage.getItem("cart") || "[]"
+);
 
-  if(!name || !lastname || !phone){
-    alert("Ҳамаи маълумотро пур кунед!");
-    return;
-  }
+let products = JSON.parse(
+  localStorage.getItem("products") || "null"
+);
 
-  localStorage.setItem("userName",name);
-  localStorage.setItem("userLast",lastname);
-  localStorage.setItem("userPhone",phone);
 
-  startApp();
+/* МАҲСУЛОТИ АВВАЛИЯ */
+
+if(!products){
+
+  products = [
+    {
+      id:1,
+      name:"Шакар 1 кг",
+      price:9.80
+    },
+    {
+      id:2,
+      name:"Snickers 2 дона",
+      price:9
+    },
+    {
+      id:3,
+      name:"Колбаса",
+      price:36.80
+    }
+  ];
+
+  saveProducts();
 }
 
-function startApp(){
-  document.getElementById("register").classList.add("hidden");
-  document.getElementById("shop").classList.remove("hidden");
-  document.getElementById("nav").classList.remove("hidden");
 
-  document.getElementById("username").innerText=
-    localStorage.getItem("userName") || "";
-}
+/* НИШОН ДОДАНИ МАҲСУЛОТ */
 
-function addProduct(){
-  cart.push({
-    name:"Маҳсулоти интихобшуда",
-    price:10
+function renderProducts(){
+
+  let html="";
+
+  products.forEach(function(product){
+
+    html += `
+      <div class="card">
+
+        <div class="product">
+
+          <div class="product-info">
+
+            <div class="product-name">
+              ${product.name}
+            </div>
+
+            <div class="price">
+              ${product.price} сомонӣ
+            </div>
+
+          </div>
+
+        </div>
+
+        <button
+          class="green"
+          onclick="addToCart(${product.id})"
+        >
+          🛒 Ба сабад
+        </button>
+
+      </div>
+    `;
+
   });
 
-  document.getElementById("cartCount").innerText=cart.length;
+  document.getElementById("products").innerHTML =
+    html || '<div class="empty">Маҳсулот нест.</div>';
+}
+
+
+/* САБАД */
+
+function addToCart(id){
+
+  let product = products.find(
+    p => p.id === id
+  );
+
+  if(!product) return;
+
+  cart.push({
+    name:product.name,
+    price:product.price
+  });
+
+  saveCart();
+
   alert("Ба сабад илова шуд! 🛒");
+
+  updateCartCount();
 }
 
-function showPage(page){
-  document.getElementById("homePage").classList.add("hidden");
-  document.getElementById("cartPage").classList.add("hidden");
-  document.getElementById("chatPage").classList.add("hidden");
 
-  if(page==="home"){
-    document.getElementById("homePage").classList.remove("hidden");
-  }
+function updateCartCount(){
 
-  if(page==="cart"){
-    document.getElementById("cartPage").classList.remove("hidden");
-
-    let html="";
-    cart.forEach((item)=>{
-      html+="<div class='card'>"+
-      item.name+" - "+item.price+" сомонӣ</div>";
-    });
-    
-
-    document.getElementById("cartItems").innerHTML=
-      html || "Сабад холӣ аст";
-  }
-
-  if(page==="chat"){
-    document.getElementById("chatPage").classList.remove("hidden");
-  }
+  document.getElementById("cartCount").innerText =
+    cart.length;
 }
 
-function sendMessage(){
-  let input=document.getElementById("messageInput");
-  let text=input.value;
 
-  if(!text)return;
+function saveCart(){
 
-  document.getElementById("messages").innerHTML+=
-  "<div class='message'>"+text+"</div>";
+  localStorage.setItem(
+    "cart",
+    JSON.stringify(cart)
+  );
 
-  input.value="";
 }
 
-function order(){
-  if(cart.length===0){
-    alert("Сабад холӣ аст!");
-    return;
-  }
 
-  alert("Фармоиши шумо қабул шуд! 📦 Админ бо шумо тамос мегирад.");
-  showPage("chat");
-}
-
-if(localStorage.getItem("userName")){
-  startApp();
-}
-</script>
-
-</body>
-</html>
+/* С 
