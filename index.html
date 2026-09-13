@@ -3,141 +3,53 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Diramshop</title>
 
 <style>
-*{box-sizing:border-box}
-
 body{
-  margin:0;
-  font-family:Arial,sans-serif;
+  font-family:Arial;
   background:#f2f2f7;
-  color:#111;
-  padding-bottom:90px;
-}
-
-.app{
-  max-width:600px;
-  margin:auto;
+  margin:0;
   padding:20px;
-}
-
-.logo{
-  text-align:center;
-  font-size:30px;
-  font-weight:bold;
-  margin-bottom:20px;
 }
 
 .card{
   background:white;
-  padding:18px;
-  margin:15px 0;
-  border-radius:20px;
-  box-shadow:0 4px 15px #00000010;
-}
-
-.product-img{
-  width:100%;
-  height:200px;
-  object-fit:cover;
+  padding:20px;
   border-radius:15px;
-  margin-bottom:12px;
-}
-
-.price{
-  color:#16a34a;
-  font-size:18px;
-  font-weight:bold;
-  margin:8px 0;
+  margin-bottom:15px;
 }
 
 input,button{
   width:100%;
   padding:15px;
   margin-top:10px;
-  border:none;
-  border-radius:12px;
-  font-size:16px;
-}
-
-input{
-  background:#eee;
+  box-sizing:border-box;
 }
 
 button{
-  background:#111;
+  background:#16a34a;
   color:white;
-  font-weight:bold;
+  border:none;
+  border-radius:10px;
 }
-
-.green{background:#16a34a}
-.red{background:#dc2626}
 
 .hidden{
   display:none;
 }
-
-.bottom{
-  position:fixed;
-  bottom:0;
-  left:0;
-  right:0;
-  background:white;
-  padding:10px;
-  display:flex;
-  gap:8px;
-  box-shadow:0 -2px 10px #00000015;
-}
-
-.bottom button{
-  margin:0;
-  font-size:13px;
-}
-
-.small{
-  color:#777;
-  font-size:14px;
-}
-
 </style>
 </head>
 
 <body>
 
-<div class="app">
-
-<div class="logo">🛒 Diramshop</div>
-
-
-<!-- HOME -->
-
-<div id="homePage">
+<div id="home">
 
 <div class="card">
-<h2>Хуш омадед 👋</h2>
-<p>Маҳсулоти худро интихоб кунед.</p>
-</div>
+<h1>🛒 Diramshop</h1>
 
-<h2>Маҳсулот</h2>
-
-<div id="products"></div>
-
-</div>
-
-
-<!-- CART -->
-
-<div id="cartPage" class="hidden">
-
-<div class="card">
-
-<h2>🛒 Сабад</h2>
-
-<div id="cartItems"></div>
-
-<button onclick="showHome()">
-← Бозгашт
+<button onclick="openAdmin()">
+👨‍💼 Admin
 </button>
 
 </div>
@@ -145,15 +57,11 @@ button{
 </div>
 
 
-<!-- ADMIN LOGIN -->
-
-<div id="loginPage" class="hidden">
+<div id="login" class="hidden">
 
 <div class="card">
 
-<h2>👨‍💼 Admin</h2>
-
-<p class="small">Паролро ворид кунед</p>
+<h2>👨‍💼 Воридшавии Admin</h2>
 
 <input
 id="password"
@@ -165,18 +73,12 @@ placeholder="Парол"
 Даромадан
 </button>
 
-<button onclick="showHome()">
-← Бозгашт
-</button>
-
 </div>
 
 </div>
 
 
-<!-- ADMIN PANEL -->
-
-<div id="adminPage" class="hidden">
+<div id="admin" class="hidden">
 
 <div class="card">
 
@@ -189,165 +91,54 @@ placeholder="Номи маҳсулот"
 
 <input
 id="productPrice"
+placeholder="Нарх"
 type="number"
-placeholder="Нарх (сомонӣ)"
 >
 
-<input
-id="productImage"
-type="file"
-accept="image/*"
->
-
-<button
-class="green"
-onclick="addProduct()"
->
+<button onclick="addProduct()">
 ➕ Добавить маҳсулот
 </button>
 
 </div>
 
 
-<div id="adminProducts"></div>
-
-
-<button
-class="red"
-onclick="logoutAdmin()"
->
-Баромадан
-</button>
-
-</div>
-
-</div>
-
-
-<!-- MENU -->
-
-<div class="bottom">
-
-<button onclick="showHome()">
-🏠 Асосӣ
-</button>
-
-<button onclick="showCart()">
-🛒 Сабад
-</button>
-
-<button onclick="openAdmin()">
-👨‍💼 Admin
-</button>
+<div id="products"></div>
 
 </div>
 
 
 <script>
 
-/* PRODUCTS */
-
-let products = JSON.parse(
-localStorage.getItem("products")
-) || [];
-
-
-/* CART */
-
-let cart = JSON.parse(
-localStorage.getItem("cart")
-) || [];
-
-
-/* HIDE ALL */
-
-function hideAll(){
-
-document.getElementById("homePage").classList.add("hidden");
-
-document.getElementById("cartPage").classList.add("hidden");
-
-document.getElementById("loginPage").classList.add("hidden");
-
-document.getElementById("adminPage").classList.add("hidden");
-
-}
-
-
-/* HOME */
-
-function showHome(){
-
-hideAll();
-
-document.getElementById("homePage").classList.remove("hidden");
-
-renderProducts();
-
-}
-
-
-/* CART */
-
-function showCart(){
-
-hideAll();
-
-document.getElementById("cartPage").classList.remove("hidden");
-
-renderCart();
-
-}
-
-
-/* ADMIN */
-
 function openAdmin(){
 
-hideAll();
+document.getElementById("home").classList.add("hidden");
 
-if(localStorage.getItem("adminLogged")=="true"){
-
-document.getElementById("adminPage").classList.remove("hidden");
-
-renderAdminProducts();
-
-}else{
-
-document.getElementById("loginPage").classList.remove("hidden");
+document.getElementById("login").classList.remove("hidden");
 
 }
 
-}
-
-
-/* LOGIN */
 
 function loginAdmin(){
 
-let pass=document.getElementById("password").value;
+let password=document.getElementById(
+"password"
+).value;
 
-if(pass=="1234"){
 
-localStorage.setItem(
-"adminLogged",
-"true"
-);
+if(password=="1234"){
 
-alert("Хуш омадед Admin 👨‍💼");
+document.getElementById("login").classList.add("hidden");
 
-openAdmin();
+document.getElementById("admin").classList.remove("hidden");
 
 }else{
 
-alert("Парол нодуруст ❌");
+alert("Парол нодуруст");
 
 }
 
 }
 
-
-/* ADD PRODUCT */
 
 function addProduct(){
 
@@ -359,75 +150,30 @@ let price=document.getElementById(
 "productPrice"
 ).value;
 
-let imageInput=document.getElementById(
-"productImage"
-);
-
 
 if(name=="" || price==""){
 
-alert("Ном ва нархро пур кунед!");
+alert("Ном ва нархро пур кунед");
 
 return;
 
 }
 
 
-/* IMAGE */
+document.getElementById(
+"products"
+).innerHTML +=
 
-if(imageInput.files.length>0){
+"<div class='card'><b>"+
 
-let reader=new FileReader();
+name+
 
-reader.onload=function(e){
+"</b><br>"+
 
-saveProduct(
-name,
-price,
-e.target.result
-);
+price+
 
-};
+" сомонӣ</div>";
 
-reader.readAsDataURL(
-imageInput.files[0]
-);
-
-}else{
-
-saveProduct(
-name,
-price,
-""
-);
-
-}
-
-}
-
-
-function saveProduct(name,price,image){
-
-products.push({
-
-id:Date.now(),
-
-name:name,
-
-price:price,
-
-image:image
-
-});
-
-
-localStorage.setItem(
-"products",
-JSON.stringify(products)
-);
-
-
-/* CLEAR */
 
 document.getElementById(
 "productName"
@@ -437,221 +183,10 @@ document.getElementById(
 "productPrice"
 ).value="";
 
-document.getElementById(
-"productImage"
-).value="";
 
-
-renderProducts();
-
-renderAdminProducts();
-
-alert("Маҳсулот добавит шуд ✅");
+alert("Маҳсулот добавит шуд!");
 
 }
-
-
-/* RENDER PRODUCTS */
-
-function renderProducts(){
-
-let html="";
-
-products.forEach(function(p){
-
-let img="";
-
-if(p.image!=""){
-
-img=
-'<img class="product-img" src="'+
-p.image+
-'">';
-
-}
-
-html+=
-
-'<div class="card">'+
-
-img+
-
-'<h3>'+
-p.name+
-'</h3>'+
-
-'<div class="price">'+
-p.price+
-' сомонӣ</div>'+
-
-'<button class="green" onclick="addToCart('+
-p.id+
-')">🛒 Ба сабад</button>'+
-
-'</div>';
-
-});
-
-
-if(html==""){
-
-html=
-'<div class="card">Ҳоло маҳсулот нест.</div>';
-
-}
-
-
-document.getElementById(
-"products"
-).innerHTML=html;
-
-}
-
-
-/* ADD CART */
-
-function addToCart(id){
-
-let product=products.find(
-function(p){
-
-return p.id==id;
-
-}
-);
-
-
-cart.push(product);
-
-
-localStorage.setItem(
-"cart",
-JSON.stringify(cart)
-);
-
-
-alert("Ба сабад илова шуд 🛒");
-
-}
-
-
-/* RENDER CART */
-
-function renderCart(){
-
-let html="";
-
-cart.forEach(function(p){
-
-html+=
-
-'<div class="card">'+
-
-'<b>'+
-p.name+
-'</b><br>'+
-
-'<span class="price">'+
-p.price+
-' сомонӣ</span>'+
-
-'</div>';
-
-});
-
-
-if(html==""){
-
-html="Сабад холӣ аст 🛒";
-
-}
-
-
-document.getElementById(
-"cartItems"
-).innerHTML=html;
-
-}
-
-
-/* ADMIN PRODUCTS */
-
-function renderAdminProducts(){
-
-let html="";
-
-products.forEach(function(p){
-
-html+=
-
-'<div class="card">'+
-
-'<b>'+
-p.name+
-'</b><br>'+
-
-'<span class="price">'+
-p.price+
-' сомонӣ</span>'+
-
-'<button class="red" onclick="deleteProduct('+
-p.id+
-')">🗑️ Нест кардан</button>'+
-
-'</div>';
-
-});
-
-
-document.getElementById(
-"adminProducts"
-).innerHTML=html;
-
-}
-
-
-/* DELETE */
-
-function deleteProduct(id){
-
-products=products.filter(
-function(p){
-
-return p.id!=id;
-
-}
-);
-
-
-localStorage.setItem(
-"products",
-JSON.stringify(products)
-);
-
-
-renderProducts();
-
-renderAdminProducts();
-
-}
-
-
-/* LOGOUT */
-
-function logoutAdmin(){
-
-localStorage.removeItem(
-"adminLogged"
-);
-
-showHome();
-
-}
-
-
-/* START */
-
-renderProducts();
 
 </script>
 
