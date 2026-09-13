@@ -3,19 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Diramshop</title>
 
 <style>
-*{
-  box-sizing:border-box;
-}
+*{box-sizing:border-box}
 
 body{
   margin:0;
-  font-family:Arial, sans-serif;
+  font-family:Arial,sans-serif;
   background:#f2f2f7;
-  padding-bottom:80px;
+  color:#111;
+  padding-bottom:90px;
 }
 
 .app{
@@ -33,12 +31,28 @@ body{
 
 .card{
   background:white;
-  padding:20px;
+  padding:18px;
   margin:15px 0;
   border-radius:20px;
+  box-shadow:0 4px 15px #00000010;
 }
 
-button,input{
+.product-img{
+  width:100%;
+  height:200px;
+  object-fit:cover;
+  border-radius:15px;
+  margin-bottom:12px;
+}
+
+.price{
+  color:#16a34a;
+  font-size:18px;
+  font-weight:bold;
+  margin:8px 0;
+}
+
+input,button{
   width:100%;
   padding:15px;
   margin-top:10px;
@@ -47,22 +61,18 @@ button,input{
   font-size:16px;
 }
 
-button{
-  background:#111;
-  color:white;
-}
-
 input{
   background:#eee;
 }
 
-.green{
-  background:#16a34a;
+button{
+  background:#111;
+  color:white;
+  font-weight:bold;
 }
 
-.red{
-  background:#dc2626;
-}
+.green{background:#16a34a}
+.red{background:#dc2626}
 
 .hidden{
   display:none;
@@ -76,72 +86,42 @@ input{
   background:white;
   padding:10px;
   display:flex;
-  gap:10px;
+  gap:8px;
+  box-shadow:0 -2px 10px #00000015;
 }
 
 .bottom button{
   margin:0;
+  font-size:13px;
 }
 
-.price{
-  color:#16a34a;
-  font-weight:bold;
-  margin-top:5px;
+.small{
+  color:#777;
+  font-size:14px;
 }
+
 </style>
-
 </head>
 
 <body>
 
 <div class="app">
 
-<div class="logo">
-🛒 Diramshop
-</div>
+<div class="logo">🛒 Diramshop</div>
 
 
 <!-- HOME -->
 
-<div id="home">
+<div id="homePage">
 
 <div class="card">
-
 <h2>Хуш омадед 👋</h2>
-
-<p>Ба Diramshop хуш омадед!</p>
-
+<p>Маҳсулоти худро интихоб кунед.</p>
 </div>
 
+<h2>Маҳсулот</h2>
 
-<div class="card">
-
-<h3>Шакар 1 кг</h3>
-
-<div class="price">
-9.80 сомонӣ
-</div>
-
-<button class="green" onclick="addCart('Шакар 1 кг',9.80)">
-🛒 Ба сабад
-</button>
-
-</div>
-
-
-<div class="card">
-
-<h3>Колбаса</h3>
-
-<div class="price">
-36.80 сомонӣ
-</div>
-
-<button class="green" onclick="addCart('Колбаса',36.80)">
-🛒 Ба сабад
-</button>
-
-</div>
+<div id="products"></div>
 
 </div>
 
@@ -154,9 +134,7 @@ input{
 
 <h2>🛒 Сабад</h2>
 
-<div id="cartItems">
-Сабад холӣ аст
-</div>
+<div id="cartItems"></div>
 
 <button onclick="showHome()">
 ← Бозгашт
@@ -175,13 +153,15 @@ input{
 
 <h2>👨‍💼 Admin</h2>
 
+<p class="small">Паролро ворид кунед</p>
+
 <input
 id="password"
 type="password"
 placeholder="Парол"
 >
 
-<button onclick="login()">
+<button onclick="loginAdmin()">
 Даромадан
 </button>
 
@@ -200,19 +180,44 @@ placeholder="Парол"
 
 <div class="card">
 
-<h2>
-👨‍💼 Панели Admin
-</h2>
+<h2>👨‍💼 Панели Admin</h2>
 
-<p>
-Admin бомуваффақият кушода шуд!
-</p>
+<input
+id="productName"
+placeholder="Номи маҳсулот"
+>
 
-<button class="red" onclick="logout()">
-Баромадан
+<input
+id="productPrice"
+type="number"
+placeholder="Нарх (сомонӣ)"
+>
+
+<input
+id="productImage"
+type="file"
+accept="image/*"
+>
+
+<button
+class="green"
+onclick="addProduct()"
+>
+➕ Добавить маҳсулот
 </button>
 
 </div>
+
+
+<div id="adminProducts"></div>
+
+
+<button
+class="red"
+onclick="logoutAdmin()"
+>
+Баромадан
+</button>
 
 </div>
 
@@ -231,7 +236,7 @@ Admin бомуваффақият кушода шуд!
 🛒 Сабад
 </button>
 
-<button onclick="showAdmin()">
+<button onclick="openAdmin()">
 👨‍💼 Admin
 </button>
 
@@ -240,12 +245,25 @@ Admin бомуваффақият кушода шуд!
 
 <script>
 
-let cart=[];
+/* PRODUCTS */
 
+let products = JSON.parse(
+localStorage.getItem("products")
+) || [];
+
+
+/* CART */
+
+let cart = JSON.parse(
+localStorage.getItem("cart")
+) || [];
+
+
+/* HIDE ALL */
 
 function hideAll(){
 
-document.getElementById("home").classList.add("hidden");
+document.getElementById("homePage").classList.add("hidden");
 
 document.getElementById("cartPage").classList.add("hidden");
 
@@ -256,14 +274,20 @@ document.getElementById("adminPage").classList.add("hidden");
 }
 
 
+/* HOME */
+
 function showHome(){
 
 hideAll();
 
-document.getElementById("home").classList.remove("hidden");
+document.getElementById("homePage").classList.remove("hidden");
+
+renderProducts();
 
 }
 
+
+/* CART */
 
 function showCart(){
 
@@ -271,45 +295,48 @@ hideAll();
 
 document.getElementById("cartPage").classList.remove("hidden");
 
-let html="";
-
-cart.forEach(function(item){
-
-html += "<p><b>"+item.name+"</b> - "+item.price+" сомонӣ</p>";
-
-});
-
-if(html==""){
-
-html="Сабад холӣ аст 🛒";
-
-}
-
-document.getElementById("cartItems").innerHTML=html;
+renderCart();
 
 }
 
 
-function showAdmin(){
+/* ADMIN */
+
+function openAdmin(){
 
 hideAll();
+
+if(localStorage.getItem("adminLogged")=="true"){
+
+document.getElementById("adminPage").classList.remove("hidden");
+
+renderAdminProducts();
+
+}else{
 
 document.getElementById("loginPage").classList.remove("hidden");
 
 }
 
+}
 
-function login(){
+
+/* LOGIN */
+
+function loginAdmin(){
 
 let pass=document.getElementById("password").value;
 
 if(pass=="1234"){
 
-hideAll();
-
-document.getElementById("adminPage").classList.remove("hidden");
+localStorage.setItem(
+"adminLogged",
+"true"
+);
 
 alert("Хуш омадед Admin 👨‍💼");
+
+openAdmin();
 
 }else{
 
@@ -320,26 +347,311 @@ alert("Парол нодуруст ❌");
 }
 
 
-function logout(){
+/* ADD PRODUCT */
+
+function addProduct(){
+
+let name=document.getElementById(
+"productName"
+).value;
+
+let price=document.getElementById(
+"productPrice"
+).value;
+
+let imageInput=document.getElementById(
+"productImage"
+);
+
+
+if(name=="" || price==""){
+
+alert("Ном ва нархро пур кунед!");
+
+return;
+
+}
+
+
+/* IMAGE */
+
+if(imageInput.files.length>0){
+
+let reader=new FileReader();
+
+reader.onload=function(e){
+
+saveProduct(
+name,
+price,
+e.target.result
+);
+
+};
+
+reader.readAsDataURL(
+imageInput.files[0]
+);
+
+}else{
+
+saveProduct(
+name,
+price,
+""
+);
+
+}
+
+}
+
+
+function saveProduct(name,price,image){
+
+products.push({
+
+id:Date.now(),
+
+name:name,
+
+price:price,
+
+image:image
+
+});
+
+
+localStorage.setItem(
+"products",
+JSON.stringify(products)
+);
+
+
+/* CLEAR */
+
+document.getElementById(
+"productName"
+).value="";
+
+document.getElementById(
+"productPrice"
+).value="";
+
+document.getElementById(
+"productImage"
+).value="";
+
+
+renderProducts();
+
+renderAdminProducts();
+
+alert("Маҳсулот добавит шуд ✅");
+
+}
+
+
+/* RENDER PRODUCTS */
+
+function renderProducts(){
+
+let html="";
+
+products.forEach(function(p){
+
+let img="";
+
+if(p.image!=""){
+
+img=
+'<img class="product-img" src="'+
+p.image+
+'">';
+
+}
+
+html+=
+
+'<div class="card">'+
+
+img+
+
+'<h3>'+
+p.name+
+'</h3>'+
+
+'<div class="price">'+
+p.price+
+' сомонӣ</div>'+
+
+'<button class="green" onclick="addToCart('+
+p.id+
+')">🛒 Ба сабад</button>'+
+
+'</div>';
+
+});
+
+
+if(html==""){
+
+html=
+'<div class="card">Ҳоло маҳсулот нест.</div>';
+
+}
+
+
+document.getElementById(
+"products"
+).innerHTML=html;
+
+}
+
+
+/* ADD CART */
+
+function addToCart(id){
+
+let product=products.find(
+function(p){
+
+return p.id==id;
+
+}
+);
+
+
+cart.push(product);
+
+
+localStorage.setItem(
+"cart",
+JSON.stringify(cart)
+);
+
+
+alert("Ба сабад илова шуд 🛒");
+
+}
+
+
+/* RENDER CART */
+
+function renderCart(){
+
+let html="";
+
+cart.forEach(function(p){
+
+html+=
+
+'<div class="card">'+
+
+'<b>'+
+p.name+
+'</b><br>'+
+
+'<span class="price">'+
+p.price+
+' сомонӣ</span>'+
+
+'</div>';
+
+});
+
+
+if(html==""){
+
+html="Сабад холӣ аст 🛒";
+
+}
+
+
+document.getElementById(
+"cartItems"
+).innerHTML=html;
+
+}
+
+
+/* ADMIN PRODUCTS */
+
+function renderAdminProducts(){
+
+let html="";
+
+products.forEach(function(p){
+
+html+=
+
+'<div class="card">'+
+
+'<b>'+
+p.name+
+'</b><br>'+
+
+'<span class="price">'+
+p.price+
+' сомонӣ</span>'+
+
+'<button class="red" onclick="deleteProduct('+
+p.id+
+')">🗑️ Нест кардан</button>'+
+
+'</div>';
+
+});
+
+
+document.getElementById(
+"adminProducts"
+).innerHTML=html;
+
+}
+
+
+/* DELETE */
+
+function deleteProduct(id){
+
+products=products.filter(
+function(p){
+
+return p.id!=id;
+
+}
+);
+
+
+localStorage.setItem(
+"products",
+JSON.stringify(products)
+);
+
+
+renderProducts();
+
+renderAdminProducts();
+
+}
+
+
+/* LOGOUT */
+
+function logoutAdmin(){
+
+localStorage.removeItem(
+"adminLogged"
+);
 
 showHome();
 
 }
 
 
-function addCart(name,price){
+/* START */
 
-cart.push({
-
-name:name,
-
-price:price
-
-});
-
-alert("Ба сабад илова шуд 🛒");
-
-}
+renderProducts();
 
 </script>
 
